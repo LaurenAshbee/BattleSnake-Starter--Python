@@ -3,137 +3,112 @@ from typing import List, Dict
 
 #FUNCTIONS--------------------------------------------------------------------------
 
+
 def avoid_my_neck(my_head: Dict[str, int], my_body: List[dict
 ], possible_moves: List[str]) -> List[str]:
-    """
-    my_head: Dictionary of x/y coordinates of the Battlesnake head.
-            e.g. {"x": 0, "y": 0}
-    my_body: List of dictionaries of x/y coordinates for every segment of a Battlesnake.
-            e.g. [ {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0} ]
-    possible_moves: List of strings. Moves to pick from.
-            e.g. ["up", "down", "left", "right"]
-
-    return: The list of remaining possible_moves, with the 'neck' direction removed
-    """
+    
     my_neck = my_body[1]  # The segment of body right after the head is the 'neck'
 
-    if my_neck["x"] < my_head["x"]:  # my neck is left of my head
+    if my_neck["x"] < my_head["x"]:    # my neck is left of my head
         possible_moves.remove("left")
     elif my_neck["x"] > my_head["x"]:  # my neck is right of my head
         possible_moves.remove("right")
     elif my_neck["y"] < my_head["y"]:  # my neck is below my head
         possible_moves.remove("down")
-    elif my_neck["y"] > my_head["y"]:  # my neck is above my head
+    elif my_neck["y"] > my_head["y"]:       # my neck is above my head
         possible_moves.remove("up")
 
-    return possible_moves
-
+    return possible_moves #The list of remaining possible_moves, with the 'neck' direction removed
 
 
 def avoid_borders(my_head: Dict[str, int], board_height: int, board_width: int, possible_moves: List[str]) -> List[str]:
-    """
-    my_head: Dictionary of x/y coordinates of the Battlesnake head.
-            e.g. {"x": 0, "y": 0}
-    
-    possible_moves: List of strings. Moves to pick from.
-            e.g. ["up", "down", "left", "right"]
-
-    return: The list of remaining possible_moves, with the 'border' direction removed
-    """
-    if my_head["x"] == 0 and my_head["y"] == 0:  #head at bottom left corner
-        possible_moves.remove("left")
-        possible_moves.remove("down")
-    elif my_head["x"] == (board_width - 1) and my_head["y"] == 0: #head is at bottom right corner
-        possible_moves.remove("right")
-        possible_moves.remove("down")
-    elif my_head["x"] == 0 and my_head["y"] == (board_height - 1) :  # head is at top left corner
-        possible_moves.remove("left")
-        possible_moves.remove("up")
-    elif my_head["x"] == (board_width - 1) and my_head["y"] == (board_height - 1):#head at top right corner
-        possible_moves.remove("right")
-        possible_moves.remove("up")
-    elif my_head["x"] == 0:               # head is along left border wall
+    # Returns the list of remaining possible_moves, with the 'border' direction removed
+   
+    if my_head["x"] == 0:                   # head is along left border wall
         possible_moves.remove("left")   
-    elif my_head["x"] == board_width - 1:            # head is along right border wall
+    if my_head["x"] == board_width - 1:     # head is along right border wall
         possible_moves.remove("right")
-    elif my_head["y"] == 0:             # head is along bottom border wall
+    if my_head["y"] == 0:                   # head is along bottom border wall
         possible_moves.remove("down")
-    elif my_head["y"] == board_height - 1:            # head is along top border wall
+    if my_head["y"] == board_height - 1:    # head is along top border wall
         possible_moves.remove("up")
 
     return possible_moves 
 
+
 def avoid_my_body(my_head: Dict[str, int], my_body: List[dict], possible_moves: List[str]) -> List[str]:
   """
-  The head cannot hit itself, and is already programmed to avoid the neck, and the head cannot physically hit the third body section, so testing begins at the fourth body section ie: index 3
+  The head cannot hit itself, and is already programmed to avoid the neck, and the head cannot
+  physically hit the third body section, so testing begins at the fourth body section ie: index 3
   """
-  body_sections = 3
-
-  while body_sections < len(my_body):
-    if my_head["x"]  == my_body[body_sections]["x"] and my_head["y"] == my_body[body_sections]["y"] + 1:
-      possible_moves.remove("down")
-    print(f"Checking for head above Body Section {body_sections + 1}")
+  for sections in my_body:
+    if sections == my_body[0] or sections == my_body[1] or sections == my_body[2]:
+        break
+        
+    if my_head["x"]  == sections["x"] and my_head["y"] == sections["y"] + 1:
+      possible_moves.remove("down")         # checks if my head is above my body           
+    print(f"Checking if my head is above my Body Section {body_sections + 1}")
     print(possible_moves)
 
-    if my_head["x"] == my_body[body_sections]["x"] and my_head["y"] == my_body[body_sections]["y"] - 1:
-      possible_moves.remove("up")
-    print(f"Checking for head below Body Section {body_sections + 1}")
+    if my_head["x"] == sections["x"] and my_head["y"] == sections["y"] - 1:
+      possible_moves.remove("up")           # checks if my head is below my body
+    print(f"Checking if my head is below my Body Section {body_sections + 1}")
     print(possible_moves)
 
-    if my_head["x"] == my_body[body_sections]["x"] - 1 and my_head["y"] == my_body[body_sections]["y"]:
-      possible_moves.remove("right")
-    print(f"Checking for head left of Body Section {body_sections + 1}")
+    if my_head["x"] == sections["x"] - 1 and my_head["y"] == sections["y"]:
+      possible_moves.remove("right")        # checks if my head is left of my body
+    print(f"Checking if my head is left of my Body Section {body_sections + 1}")
     print(possible_moves)
 
-    if my_head["x"] == my_body[body_sections]["x"] + 1 and my_head["y"] == my_body[body_sections]["y"]:
-      possible_moves.remove("left")
-    print(f"Checking for head right of Body Section {body_sections + 1}")
+    if my_head["x"] == sections["x"] + 1 and my_head["y"] == sections["y"]:
+      possible_moves.remove("left")         # checks if my head is right of my body
+    print(f"Checking if my head is right of my Body Section {body_sections + 1}")
     print(possible_moves)
-
-    body_sections += 1
 
   return possible_moves
   
 def avoid_other_snakes(my_head: Dict[str, int], other_snakes: List[dict], data: dict, possible_moves: List[str]) -> List[str]:
-  snake_num = 0
-  body_sections = 0
+  for snakes in other_snakes:
+    
+      body_sections = 1
+      snakes_body_set = set(snakes["body"])
+      '''
+      sometimes snakes body parts are stacked on top of themselves, for example
+      at the very beginning and sometimes when consuming food, turning the list into a set ensures
+      that the same locations are not checked twice
+      '''
+      for sections in snakes_body_set:
+        
+        print(f"current Body Sections Value: {body_sections}")
+        print(f"Their are a total of {len(snakes) - 1} other snakes on the board")
+        print(f"About to check snake named: {snakes['name']}")
+        
+        if my_head["x"] == sections["x"] and my_head["y"] == sections["y"] + 1:
+            possible_moves.remove("down")
+        print(f"Checking for body section {body_sections} of Other Snake Named: {snakes['name']} below my head.")
+        print(possible_moves)
+                                                                      
+        if my_head["x"] == sections["x"] and my_head["y"] == sections["y"] - 1:
+            possible_moves.remove("up")
+        print(f"Checking for body section {body_sections} of Other Snake Named: {snakes'name']} above my head.")
+        print(possible_moves)
+    
+         if my_head["x"] == sections["x"] - 1 and my_head["y"] == sections["y"]:
+            possible_moves.remove("right")
+         print(f"Checking for body section {body_sections} of Other Snake Named: {snakes['name']} to the right of my head.")
+         print(possible_moves)
+            
+         if my_head["x"] == sections["x"] + 1 and my_head["y"] == sections["y"]:
+            possible_moves.remove("left")
+         print(f"Checking for body section {body_sections} of Other Snake Named: {snakes['name']} to the left of my head.")
+         print(possible_moves)
+            
+         body_sections += 1
+   return possible_moves                                       
+                     
 
-  while snake_num < len(other_snakes):
-    while body_sections < len(other_snakes[snake_num]["body"]):
-      print(f"current Body Sections Value: {body_sections}")
-      print(f"current snake_num value: {snake_num}")
-      print(f"Their are a total of {len(other_snakes) - 1} other snakes on the board")
-      print(f"About to check snake named: {other_snakes[snake_num]['name']}")
-
-      if data["you"]["id"] == other_snakes[snake_num]["id"]:
-        break
-
-      if my_head["x"] == other_snakes[snake_num]["body"][body_sections]["x"] and my_head["y"] == other_snakes[snake_num]["body"][body_sections]["y"] + 1:
-        possible_moves.remove("down")
-      print(f"Checking for body section {body_sections + 1} of Other Snake Named: {other_snakes[snake_num]['name']} below my head.")
-      print(possible_moves)
-
-      if my_head["x"] == other_snakes[snake_num]["body"][body_sections]["x"] and my_head["y"] == other_snakes[snake_num]["body"][body_sections]["y"] - 1:
-        possible_moves.remove("up")
-      print(f"Checking for body section {body_sections + 1} of Snake {snake_num} above my head.")
-      print(possible_moves)
-
-      if my_head ["x"] == other_snakes[snake_num]["body"][body_sections]["x"] - 1 and my_head["y"] == other_snakes[snake_num]["body"][body_sections]["y"]:
-        possible_moves.remove("right")
-      print(f"Checking for body section {body_sections + 1} of Snake {snake_num} to the right of my head.")
-      print(possible_moves)
-
-      if my_head["x"] == other_snakes[snake_num]["body"][body_sections]["x"] + 1 and my_head["y"] == other_snakes[snake_num]["body"][body_sections]["y"]:
-        possible_moves.remove("left")
-      print(f"Checking for body section {body_sections + 1} of Snake {snake_num} to the left of my head.")
-      print(possible_moves)
-
-      body_sections += 1
-
-    snake_num += 1
-    body_sections = 0
-
-  return possible_moves
+    #  if data["you"]["id"] == other_snakes[snake_num]["id"]:
+    #    break                               # prevents checking against your own positioning, ie: if the other snake is actually you, it breaks out
 
 def closest_food (food_coords: List[dict], my_head: Dict[str, int], my_list: List[list]) -> List[list]:
   for item in food_coords:
